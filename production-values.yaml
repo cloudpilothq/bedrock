@@ -1,0 +1,51 @@
+catalog:
+  app:
+    persistence:
+      provider: mysql
+      endpoint: "REPLACE_WITH_MYSQL_ENDPOINT"
+      database: "catalog"
+      secret:
+        create: false
+        name: catalog-db
+  mysql:
+    create: false
+
+orders:
+  app:
+    persistence:
+      provider: postgresql
+      endpoint: "REPLACE_WITH_POSTGRES_ENDPOINT"
+      database: "orders"
+      secret:
+        create: false
+        name: orders-db
+  postgresql:
+    create: false
+
+cart:
+  app:
+    persistence:
+      provider: dynamodb
+      dynamodb:
+        tableName: Items
+        createTable: false
+  dynamodb:
+    create: false
+  serviceAccount:
+    create: true
+    name: carts
+    annotations:
+      eks.amazonaws.com/role-arn: "REPLACE_WITH_CART_IRSA_ROLE_ARN"
+
+ui:
+  ingress:
+    enabled: true
+    className: alb
+    annotations:
+      alb.ingress.kubernetes.io/scheme: internet-facing
+      alb.ingress.kubernetes.io/target-type: ip
+    hosts:
+      - host: ""
+        paths:
+          - path: /
+            pathType: Prefix
