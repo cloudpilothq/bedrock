@@ -14,30 +14,9 @@ resource "aws_s3_bucket_public_access_block" "assets" {
 data "archive_file" "lambda_zip" {
   type        = "zip"
   output_path = "${path.module}/lambda/processor.zip"
-  
+
   source {
-    content  = <<EOF
-import json
-import urllib.parse
-import boto3
-
-print('Loading function')
-
-def lambda_handler(event, context):
-    # Get the object from the event and show its content type
-    bucket = event['Records'][0]['s3']['bucket']['name']
-    key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
-    try:
-        print(f"Image received: {key} in bucket: {bucket}")
-        return {
-            'statusCode': 200,
-            'body': json.dumps(f"Successfully processed {key}")
-        }
-    except Exception as e:
-        print(e)
-        print(f"Error getting object {key} from bucket {bucket}.")
-        raise e
-EOF
+    content  = file("${path.module}/lambda/index.py")
     filename = "index.py"
   }
 }
