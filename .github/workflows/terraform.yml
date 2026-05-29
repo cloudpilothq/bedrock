@@ -44,6 +44,15 @@ jobs:
             --region us-east-1
           sleep 5
 
+      - name: Clean up stale locks (optional - for recovery)
+        run: |
+          aws dynamodb scan --table-name terraform-locks --region us-east-1 | \
+          jq -r '.Items[]?.LockID.S // empty' | while read lock; do
+            echo "Removing stale lock: $lock"
+            aws dynamodb delete-item --table-name terraform-locks --key "{\"LockID\": {\"S\": \"$lock\"}}" --region us-east-1
+          done
+        continue-on-error: true
+
       - name: Verify AWS Credentials
         run: aws sts get-caller-identity
 
