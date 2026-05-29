@@ -14,15 +14,6 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.12"
     }
-  }
-
-  backend "s3" {
-    bucket         = "bedrock-tf-state-capstone-4492"
-    key            = "bedrock/terraform.tfstate"
-    region         = "us-east-1"
-    encrypt        = true
-    dynamodb_table = "terraform-locks"
-  }
 }
 
 provider "aws" {
