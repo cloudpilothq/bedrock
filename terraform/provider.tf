@@ -14,6 +14,7 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.12"
     }
+  }
 }
 
 provider "aws" {
