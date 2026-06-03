@@ -54,7 +54,7 @@ resource "aws_db_instance" "orders" {
   engine               = "postgres"
   engine_version       = "16.3"
   instance_class       = "db.t3.micro"
-  username             = "admin"
+  username             = "dbadmin"
   password             = "supersecret123" # In production, use Secrets Manager!
   parameter_group_name = "default.postgres16"
   skip_final_snapshot  = true

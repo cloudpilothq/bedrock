@@ -13,6 +13,14 @@ resource "aws_iam_user_policy_attachment" "dev_view_readonly" {
 resource "aws_eks_access_entry" "dev_view_entry" {
   cluster_name      = module.eks.cluster_name
   principal_arn     = aws_iam_user.dev_view.arn
-  kubernetes_groups = ["system:masters"] # For lab simplicity. In prod, use a restricted RBAC group!
   type              = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "dev_view_policy" {
+  cluster_name  = module.eks.cluster_name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+  principal_arn = aws_iam_user.dev_view.arn
+  access_scope {
+    type       = "cluster"
+  }
 }
