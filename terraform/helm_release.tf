@@ -98,6 +98,18 @@ resource "helm_release" "retail_store" {
     {
       name  = "ui.service.type"
       value = "LoadBalancer"
+    },
+    {
+      name  = "ui.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-type"
+      value = "external"
+    },
+    {
+      name  = "ui.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-scheme"
+      value = "internet-facing"
+    },
+    {
+      name  = "ui.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-nlb-target-type"
+      value = "ip"
     }
   ]
 
