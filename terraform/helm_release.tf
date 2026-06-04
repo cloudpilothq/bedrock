@@ -21,6 +21,8 @@ resource "helm_release" "aws_load_balancer_controller" {
   namespace  = "kube-system"
   version    = "1.7.2"
   wait       = false
+  replace    = true
+  cleanup_on_fail = true
 
   set = [
     {
@@ -52,6 +54,8 @@ resource "helm_release" "retail_store" {
   namespace        = "retail-app"
   create_namespace = true
   wait             = false
+  replace          = true
+  cleanup_on_fail  = true
 
   # Override with external RDS databases and DynamoDB
   set = [
