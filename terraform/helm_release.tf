@@ -20,6 +20,7 @@ resource "helm_release" "aws_load_balancer_controller" {
   chart      = "aws-load-balancer-controller"
   namespace  = "kube-system"
   version    = "1.7.2"
+  wait       = false
 
   set = [
     {
@@ -50,6 +51,7 @@ resource "helm_release" "retail_store" {
   chart            = "retail-store-sample-chart"
   namespace        = "retail-app"
   create_namespace = true
+  wait             = false
 
   # Override with external RDS databases and DynamoDB
   set = [
