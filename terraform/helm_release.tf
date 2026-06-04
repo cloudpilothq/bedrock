@@ -47,8 +47,7 @@ resource "helm_release" "aws_load_balancer_controller" {
 resource "helm_release" "retail_store" {
   name             = "retail-store"
   repository       = "oci://public.ecr.aws/aws-containers"
-  chart            = "retail-store-sample-app"
-  version          = "0.8.0"
+  chart            = "retail-store-sample-chart"
   namespace        = "retail-app"
   create_namespace = true
 
