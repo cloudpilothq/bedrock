@@ -21,6 +21,16 @@ module "eks" {
 
       instance_types = ["t3.micro"]
       capacity_type  = "ON_DEMAND"
+      
+      iam_role_additional_policies = {
+        CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+      }
+    }
+  }
+
+  cluster_addons = {
+    amazon-cloudwatch-observability = {
+      most_recent = true
     }
   }
 

@@ -9,6 +9,22 @@ resource "aws_iam_user_policy_attachment" "dev_view_readonly" {
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
 
+resource "aws_iam_user_policy" "dev_view_s3_put" {
+  name = "s3-put-assets"
+  user = aws_iam_user.dev_view.name
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = ["s3:PutObject"]
+        Effect   = "Allow"
+        Resource = "${aws_s3_bucket.assets.arn}/*"
+      },
+    ]
+  })
+}
+
 # EKS Access Entry to grant Kubernetes cluster access to the IAM user
 resource "aws_eks_access_entry" "dev_view_entry" {
   cluster_name  = module.eks.cluster_name
