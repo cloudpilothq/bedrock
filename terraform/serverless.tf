@@ -1,5 +1,6 @@
 resource "aws_s3_bucket" "assets" {
-  bucket = "bedrock-assets-${var.student_id}"
+  bucket        = "bedrock-assets-alt-soe-025-4492"
+  force_destroy = true
 }
 
 resource "aws_s3_bucket_public_access_block" "assets" {
@@ -11,19 +12,16 @@ resource "aws_s3_bucket_public_access_block" "assets" {
   restrict_public_buckets = true
 }
 
+# Zip the lambda code
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  output_path = "${path.module}/lambda/processor.zip"
-
-  source {
-    content  = file("${path.module}/lambda/index.py")
-    filename = "index.py"
-  }
+  source_dir  = "${path.module}/../lambda"
+  output_path = "${path.module}/../lambda/function.zip"
 }
 
+# Lambda IAM Role
 resource "aws_iam_role" "lambda_exec" {
   name = "bedrock-asset-processor-role"
-
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -36,28 +34,31 @@ resource "aws_iam_role" "lambda_exec" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_basic_execution" {
+resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = aws_iam_role.lambda_exec.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
+# Lambda Function
 resource "aws_lambda_function" "processor" {
   filename         = data.archive_file.lambda_zip.output_path
+  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   function_name    = "bedrock-asset-processor"
   role             = aws_iam_role.lambda_exec.arn
-  handler          = "index.lambda_handler"
-  runtime          = "python3.11"
-  source_code_hash = data.archive_file.lambda_zip.output_base64sha256
+  handler          = "index.handler"
+  runtime          = "python3.12"
 }
 
+# Lambda S3 Permission
 resource "aws_lambda_permission" "allow_s3" {
-  statement_id  = "AllowS3Invoke"
+  statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.processor.function_name
+  function_name = aws_lambda_function.processor.arn
   principal     = "s3.amazonaws.com"
   source_arn    = aws_s3_bucket.assets.arn
 }
 
+# S3 Event Notification
 resource "aws_s3_bucket_notification" "bucket_notification" {
   bucket = aws_s3_bucket.assets.id
 

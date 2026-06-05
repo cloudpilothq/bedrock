@@ -1,23 +1,34 @@
-# Create the IAM user for developers
+# Create IAM user
 resource "aws_iam_user" "dev_view" {
   name = "bedrock-dev-view"
+  tags = {
+    Project = "karatu-2025-capstone"
+  }
 }
 
-# Attach a basic managed policy (optional, but good for base AWS console access)
-resource "aws_iam_user_policy_attachment" "dev_view_readonly" {
+# Access keys for grading
+resource "aws_iam_access_key" "dev_view" {
+  user = aws_iam_user.dev_view.name
+}
+
+# Attach ReadOnlyAccess for AWS Console
+resource "aws_iam_user_policy_attachment" "readonly" {
   user       = aws_iam_user.dev_view.name
   policy_arn = "arn:aws:iam::aws:policy/ReadOnlyAccess"
 }
 
-resource "aws_iam_user_policy" "dev_view_s3_put" {
-  name = "s3-put-assets"
+# Attach S3 PutObject for the specific bucket
+resource "aws_iam_user_policy" "s3_put" {
+  name = "bedrock-assets-put"
   user = aws_iam_user.dev_view.name
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action   = ["s3:PutObject"]
+        Action = [
+          "s3:PutObject"
+        ]
         Effect   = "Allow"
         Resource = "${aws_s3_bucket.assets.arn}/*"
       },
@@ -25,11 +36,13 @@ resource "aws_iam_user_policy" "dev_view_s3_put" {
   })
 }
 
-# EKS Access Entry to grant Kubernetes cluster access to the IAM user
-resource "aws_eks_access_entry" "dev_view_entry" {
-  cluster_name  = module.eks.cluster_name
-  principal_arn = aws_iam_user.dev_view.arn
-  type          = "STANDARD"
+# Add IAM user to EKS via aws-auth (EKS access entries)
+# Since EKS cluster_creator_admin_permissions is true and we use EKS 1.30, 
+# access entries are preferred over aws-auth configmap.
+resource "aws_eks_access_entry" "dev_view" {
+  cluster_name      = module.eks.cluster_name
+  principal_arn     = aws_iam_user.dev_view.arn
+  type              = "STANDARD"
 }
 
 resource "aws_eks_access_policy_association" "dev_view_policy" {
@@ -38,23 +51,5 @@ resource "aws_eks_access_policy_association" "dev_view_policy" {
   principal_arn = aws_iam_user.dev_view.arn
   access_scope {
     type = "cluster"
-  }
-}
-
-module "cart_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.30"
-
-  role_name = "bedrock-cart-role"
-
-  oidc_providers = {
-    ex = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["retail-app:carts"]
-    }
-  }
-
-  role_policy_arns = {
-    dynamodb = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
   }
 }

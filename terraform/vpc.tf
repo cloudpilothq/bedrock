@@ -1,10 +1,12 @@
-data "aws_availability_zones" "available" {}
+data "aws_availability_zones" "available" {
+  state = "available"
+}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "~> 5.8"
+  version = "~> 5.5"
 
-  name = var.vpc_name
+  name = "project-bedrock-vpc"
   cidr = "10.0.0.0/16"
 
   azs             = slice(data.aws_availability_zones.available.names, 0, 2)
