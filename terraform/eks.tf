@@ -15,20 +15,32 @@ module "eks" {
 
   eks_managed_node_groups = {
     bedrock_ng = {
-      min_size     = 2
-      max_size     = 4
-      desired_size = 2
+      min_size     = 3
+      max_size     = 8
+      desired_size = 5
 
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.micro"]
       capacity_type  = "ON_DEMAND"
       
       iam_role_additional_policies = {
         CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
       }
+      
+      bootstrap_extra_args = "--use-max-pods false --kubelet-extra-args '--max-pods=17'"
     }
   }
 
   cluster_addons = {
+    vpc-cni = {
+      most_recent          = true
+      before_compute       = true
+      configuration_values = jsonencode({
+        env = {
+          ENABLE_PREFIX_DELEGATION = "true"
+          WARM_PREFIX_TARGET       = "1"
+        }
+      })
+    }
     amazon-cloudwatch-observability = {
       most_recent = true
     }
