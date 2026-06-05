@@ -15,11 +15,11 @@ module "eks" {
 
   eks_managed_node_groups = {
     bedrock_ng = {
-      min_size     = 3
-      max_size     = 8
-      desired_size = 5
+      min_size     = 2
+      max_size     = 4
+      desired_size = 2
 
-      instance_types = ["t3.micro"]
+      instance_types = ["t3.medium"]
       capacity_type  = "ON_DEMAND"
       
       iam_role_additional_policies = {
