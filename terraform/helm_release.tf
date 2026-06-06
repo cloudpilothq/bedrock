@@ -69,7 +69,7 @@ resource "helm_release" "retail_store" {
   # Override Carts (DynamoDB)
   set {
     name  = "carts.dynamodb.enabled"
-    value = "true" # The app might have an internal dynamodb toggle, or we just pass the table name
+    value = "false"
   }
   set {
     name  = "carts.env.DYNAMODB_TABLE_NAME"
