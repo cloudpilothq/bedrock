@@ -20,7 +20,8 @@ resource "aws_iam_role" "eks_addon_role" {
   }
 
   lifecycle {
-    ignore_changes = [assume_role_policy]
+    ignore_changes = [assume_role_policy, tags]
+    create_before_destroy = true
   }
 }
 
