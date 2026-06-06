@@ -8,8 +8,7 @@ resource "helm_release" "retail_store" {
   name       = "retail-store"
   repository = "oci://public.ecr.aws/aws-containers"
   chart      = "retail-store-sample-app"
-  version    = "0.8.1" # typical version, will let helm fetch latest if omitted, but oci requires exact version sometimes. let's omit version if possible or use a known one. Actually, "oci://public.ecr.aws/aws-containers/retail-store-sample-app" might not need version if we just want latest.
-  # But terraform helm provider requires version for OCI. I'll use 0.8.0.
+  version    = "0.4.0"
 
   namespace = kubernetes_namespace.retail_app.metadata[0].name
 
