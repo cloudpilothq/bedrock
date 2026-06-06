@@ -18,9 +18,9 @@ module "eks" {
   enable_cluster_creator_admin_permissions = true
 
   eks_managed_node_groups = {
-    bedrock_nodes = {
+    bedrock_nodes_v2 = {
       instance_types = ["t3.micro"]
-      min_size     = 4
+      min_size     = 6
       max_size     = 8
       desired_size = 6
       bootstrap_extra_args = "--use-max-pods false --kubelet-extra-args '--max-pods=110'"
