@@ -1,7 +1,9 @@
 name: "Terraform Destroy"
 
 on:
-  workflow_dispatch: # Allow manual triggering
+  push:
+    branches:
+      - main
 
 jobs:
   destroy:
