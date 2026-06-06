@@ -12,11 +12,9 @@ resource "helm_release" "retail_store" {
 
   namespace = kubernetes_namespace.retail_app.metadata[0].name
 
-  atomic          = true
   timeout         = 600
   wait            = true
   wait_for_jobs   = true
-  cleanup_on_fail = true
   # Overriding the UI service to use LoadBalancer with AWS ALB Ingress Controller
   set {
     name  = "ui.ingress.enabled"
