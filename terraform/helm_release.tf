@@ -8,7 +8,7 @@ resource "helm_release" "retail_store" {
   name       = "retail-store"
   repository = "oci://public.ecr.aws/aws-containers"
   chart      = "retail-store-sample-app"
-  version    = "0.4.0"
+
 
   namespace = kubernetes_namespace.retail_app.metadata[0].name
 
