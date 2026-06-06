@@ -41,6 +41,10 @@ jobs:
           terraform state rm aws_instance 2>/dev/null || true
         continue-on-error: true
 
-      - name: Terraform Destroy
+      - name: Terraform Destroy with Targeted Removal
         working-directory: ./terraform
-        run: terraform destroy -auto-approve
+        run: |
+          # First, destroy non-dependent resources
+          terraform destroy -auto-approve -target='aws_iam_user_policy_attachment.bedrock_dev_view' 2>/dev/null || true
+          # Then proceed with full destroy
+          terraform destroy -auto-approve
