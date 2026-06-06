@@ -54,10 +54,12 @@ jobs:
         if: github.event_name == 'pull_request'
         run: terraform plan -no-color
 
-      - name: Terraform Refresh State
+      - name: Import Orphaned Resources
         working-directory: ./terraform
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform refresh
+        run: |
+          terraform import aws_iam_role.eks_addon_role bedrock-eks-addon-role || echo "IAM Role not found or already in state"
+          terraform import 'module.eks_blueprints_addons.aws_eks_addon.this["amazon-cloudwatch-observability"]' project-bedrock-cluster:amazon-cloudwatch-observability || echo "Addon not found or already in state"
         continue-on-error: true
 
       - name: Terraform Apply
