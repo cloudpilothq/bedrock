@@ -49,10 +49,17 @@ jobs:
         run: terraform fmt -check
         continue-on-error: true
 
-      - name: Terraform Plan
+            - name: Terraform Plan
         working-directory: ./terraform
         if: github.event_name == 'pull_request'
         run: terraform plan -no-color
+
+      - name: Import Existing Resources
+        working-directory: ./terraform
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: |
+          terraform import aws_iam_role.eks_addon_role bedrock-eks-addon-role || echo "Role already in state or does not exist"
+        continue-on-error: true
 
       - name: Terraform Apply
         working-directory: ./terraform
