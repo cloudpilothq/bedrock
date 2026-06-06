@@ -44,7 +44,7 @@ resource "aws_secretsmanager_secret" "mysql_secret" {
 resource "aws_secretsmanager_secret_version" "mysql_secret_version" {
   secret_id     = aws_secretsmanager_secret.mysql_secret.id
   secret_string = jsonencode({
-    username = "admin"
+    username = "mysqluser"
     password = random_password.mysql_pw.result
   })
 }
@@ -56,7 +56,7 @@ resource "aws_db_instance" "mysql" {
   instance_class       = "db.t3.micro"
   allocated_storage    = 20
   db_name              = "catalog"
-  username             = "admin"
+  username             = "mysqluser"
   password             = random_password.mysql_pw.result
   db_subnet_group_name = aws_db_subnet_group.db_subnet.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
@@ -76,7 +76,7 @@ resource "aws_secretsmanager_secret" "pg_secret" {
 resource "aws_secretsmanager_secret_version" "pg_secret_version" {
   secret_id     = aws_secretsmanager_secret.pg_secret.id
   secret_string = jsonencode({
-    username = "admin"
+    username = "postgres"
     password = random_password.pg_pw.result
   })
 }
@@ -88,7 +88,7 @@ resource "aws_db_instance" "postgres" {
   instance_class       = "db.t3.micro"
   allocated_storage    = 20
   db_name              = "orders"
-  username             = "admin"
+  username             = "postgres"
   password             = random_password.pg_pw.result
   db_subnet_group_name = aws_db_subnet_group.db_subnet.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
