@@ -18,6 +18,10 @@ resource "aws_iam_role" "eks_addon_role" {
   tags = {
     Project = "karatu-2025-capstone"
   }
+
+  lifecycle {
+    ignore_changes = [assume_role_policy]
+  }
 }
 
 # Attach policies for EKS addons
