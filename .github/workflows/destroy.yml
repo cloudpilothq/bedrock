@@ -33,6 +33,12 @@ jobs:
           terraform state rm aws_iam_role.eks_addon_role 2>/dev/null || true
           terraform state rm 'module.eks_blueprints_addons.aws_eks_addon.this["amazon-cloudwatch-observability"]' 2>/dev/null || true
           terraform state rm helm_release.retail_store 2>/dev/null || true
+          
+          # Remove dependent resources that prevent deletion
+          terraform state rm aws_iam_user_policy_attachment.bedrock_dev_view 2>/dev/null || true
+          terraform state rm aws_iam_role_policy_attachment.eks_addon 2>/dev/null || true
+          terraform state rm aws_network_interface 2>/dev/null || true
+          terraform state rm aws_instance 2>/dev/null || true
         continue-on-error: true
 
       - name: Terraform Destroy
