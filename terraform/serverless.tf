@@ -1,5 +1,11 @@
+resource "random_string" "bucket_suffix" {
+  length  = 6
+  special = false
+  upper   = false
+}
+
 resource "aws_s3_bucket" "assets" {
-  bucket        = "bedrock-assets-alt-soe-025-4492"
+  bucket        = "bedrock-assets-alt-soe-025-4492-${random_string.bucket_suffix.result}"
   force_destroy = true
 }
 

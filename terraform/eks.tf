@@ -19,10 +19,10 @@ module "eks" {
 
   eks_managed_node_groups = {
     bedrock_nodes = {
-      instance_types = ["t3.medium"]
-      min_size     = 2
-      max_size     = 4
-      desired_size = 2
+      instance_types = ["t3.micro"]
+      min_size     = 3
+      max_size     = 5
+      desired_size = 3
       iam_role_additional_policies = {
         CloudWatchAgentServerPolicy = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
       }
