@@ -1,0 +1,40 @@
+name: "Terraform Destroy"
+
+on:
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  destroy:
+    name: "Terraform Destroy"
+    runs-on: ubuntu-latest
+    env:
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: "1.5.0"
+
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+
+      - name: Clean Up State Before Destroy
+        working-directory: ./terraform
+        run: |
+          # Remove problematic resources from state before destroy
+          # This prevents destroy failures if these resources are already gone or stuck
+          terraform state rm aws_iam_role.eks_addon_role 2>/dev/null || true
+          terraform state rm 'module.eks_blueprints_addons.aws_eks_addon.this["amazon-cloudwatch-observability"]' 2>/dev/null || true
+          terraform state rm helm_release.retail_store 2>/dev/null || true
+        continue-on-error: true
+
+      - name: Terraform Destroy
+        working-directory: ./terraform
+        run: terraform destroy -auto-approve
