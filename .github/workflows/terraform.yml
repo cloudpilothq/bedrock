@@ -58,6 +58,11 @@ jobs:
         working-directory: ./terraform
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
+          # Remove existing resources from state before importing
+          terraform state rm aws_iam_role.eks_addon_role 2>/dev/null || true
+          terraform state rm 'module.eks_blueprints_addons.aws_eks_addon.this["amazon-cloudwatch-observability"]' 2>/dev/null || true
+          
+          # Now import
           terraform import aws_iam_role.eks_addon_role bedrock-eks-addon-role || echo "IAM Role not found or already in state"
           terraform import 'module.eks_blueprints_addons.aws_eks_addon.this["amazon-cloudwatch-observability"]' project-bedrock-cluster:amazon-cloudwatch-observability || echo "Addon not found or already in state"
         continue-on-error: true
@@ -69,6 +74,16 @@ jobs:
           terraform apply -auto-approve
           terraform output -json > ../grading.json
           
+      - name: Diagnose Helm Release
+        if: failure()
+        working-directory: ./terraform
+        run: |
+          helm list -a
+          helm status retail_store || true
+          kubectl describe pods -l app=retail_store || true
+          kubectl logs -l app=retail_store --tail=100 || true
+
+
       - name: Commit grading.json
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
