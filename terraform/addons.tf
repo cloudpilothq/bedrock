@@ -11,7 +11,26 @@ module "eks_blueprints_addons" {
 
   eks_addons = {
     amazon-cloudwatch-observability = {
-      most_recent = true
+      addon_version = "v1.8.0"
+      preserve      = true
+      most_recent   = false
+    }
+    vpc-cni = {
+      addon_version = "v1.14.1-eksbuild.1"
+      preserve      = true
+      most_recent   = false
+    }
+    kube-proxy = {
+      addon_version = "v1.30.0-eksbuild.1"
+      preserve      = true
+      most_recent   = false
+    }
+    coredns = {
+      addon_version = "v1.10.1-eksbuild.1"
+      preserve      = true
+      most_recent   = false
     }
   }
+
+  depends_on = [module.eks]
 }
