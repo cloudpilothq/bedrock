@@ -32,91 +32,18 @@ jobs:
       - name: Terraform Destroy
         working-directory: ./terraform
         run: |
-          # Step 1: Detach all IAM policies before attempting user deletion
-          aws iam list-attached-user-policies --user-name bedrock-dev-view \
-          --query 'AttachedPolicies[].PolicyArn' --output text 2>/dev/null | \
-          tr '\t' '\n' | while read arn; do
-          [ -n "$arn" ] && aws iam detach-user-policy --user-name bedrock-dev-view --policy-arn "$arn" 2>/dev/null || true
-          done
-    
-          # Step 2: Delete inline policies
-          aws iam list-user-policies --user-name bedrock-dev-view \
-          --query 'PolicyNames' --output text 2>/dev/null | \
-          tr '\t' '\n' | while read policy; do
-          [ -n "$policy" ] && aws iam delete-user-policy --user-name bedrock-dev-view --policy-name "$policy" 2>/dev/null || true
-          done
-    
-          # Step 3: Remove RDS instances directly to avoid ENI detachment issues
-          aws rds describe-db-instances --query 'DBInstances[].DBInstanceIdentifier' --output text 2>/dev/null | \
-          tr '\t' '\n' | while read db_id; do
-          [ -n "$db_id" ] && aws rds delete-db-instance --db-instance-identifier "$db_id" --skip-final-snapshot 2>/dev/null || true
-          done
-      
-          # Wait for RDS deletion to complete
-          sleep 30
-    
-          # Step 4: Remove problematic resources from state (suppress errors if they don't exist)
-          terraform state rm 'aws_iam_user.bedrock_dev_view' 2>/dev/null || true
-          terraform state rm 'aws_iam_user_policy_attachment.bedrock_dev_view' 2>/dev/null || true
-          terraform state rm 'module.eks_blueprints_addons.aws_eks_addon.this["amazon-cloudwatch-observability"]' 2>/dev/null || true
-          terraform state rm 'helm_release.retail_store' 2>/dev/null || true
-          terraform state rm 'aws_iam_role_policy_attachment.eks_addon' 2>/dev/null || true
-    
-          # Step 5: Destroy with timeout and parallelism
-          timeout 600 terraform destroy -auto-approve -input=false \
-            -parallelism=20 \
-            -no-color || EXIT_CODE=$?
-          
-          # Exit with success if destroy worked
-          [ "$EXIT_CODE" = "" ] && exit 0
-          
-          # If timeout or other errors, attempt force cleanup
-          echo "Destroy operation failed or timed out. Attempting force state cleanup..."
-          
-          # Step 6: Force state cleanup for remaining resources
-          terraform state list 2>/dev/null | while read resource; do
-            if [ -n "$resource" ]; then
-              terraform state rm "$resource" 2>/dev/null || true
-            fi
-          done
-          
-          echo "Terraform state cleared. Manual AWS resource cleanup may be required."
-          exit 0          [ -n "$arn" ] && aws iam detach-user-policy --user-name bedrock-dev-view --policy-arn "$arn" 2>/dev/null || true
-          done
-  
-          # Step 2: Delete inline policies
-          aws iam list-user-policies --user-name bedrock-dev-view \
-          --query 'PolicyNames' --output text 2>/dev/null | \
-          tr '\t' '\n' | while read policy; do
-          [ -n "$policy" ] && aws iam delete-user-policy --user-name bedrock-dev-view --policy-name "$policy" 2>/dev/null || true
-          done
-  
-          # Step 3: Remove RDS instances directly to avoid ENI detachment issues
-          aws rds describe-db-instances --query 'DBInstances[].DBInstanceIdentifier' --output text 2>/dev/null | \
-          tr '\t' '\n' | while read db_id; do
-          [ -n "$db_id" ] && aws rds delete-db-instance --db-instance-identifier "$db_id" --skip-final-snapshot 2>/dev/null || true
-          done
-    
-          # Wait for RDS deletion to complete
-          sleep 30
-  
-          # Step 4: Remove problematic resources from state before destroy
-          terraform state rm 'aws_iam_user.bedrock_dev_view' 2>/dev/null || true
-          terraform state rm 'aws_iam_user_policy_attachment.bedrock_dev_view' 2>/dev/null || true
-          terraform state rm 'module.eks_blueprints_addons.aws_eks_addon.this["amazon-cloudwatch-observability"]' 2>/dev/null || true
-          terraform state rm 'helm_release.retail_store' 2>/dev/null || true
-          terraform state rm 'aws_iam_role_policy_attachment.eks_addon' 2>/dev/null || true
-  
-          # Step 5: Retry destroy with increased timeout
-          for i in 1 2 3; do
-          terraform destroy -auto-approve -input=false && exit 0
-          echo "Destroy failed (attempt $i/3). Waiting 60 seconds before retrying..."
-          sleep 60
-          done
-  
-          # Step 6: Force state cleanup for stubborn resources
-          terraform state rm 'module.vpc' 2>/dev/null || true
-          terraform state rm 'module.rds' 2>/dev/null || true
-  
-          echo "Manual cleanup may be required for remaining AWS resources"
-          exit 1
+           aws iam list-attached-user-policies --user-name bedrock-dev-view \
+           --query 'AttachedPolicies[].PolicyArn' --output text 2>/dev/null | \
+           tr '\t' '\n' | while read arn; do
+           [ -n "$arn" ] && aws iam detach-user-policy \
+           --user-name bedrock-dev-view \
+           --policy-arn "$arn" || true
+           done
+
+           terraform state rm 'aws_iam_user.bedrock_dev_view' 2>/dev/null || true
+
+           timeout 1800 terraform destroy \
+           -auto-approve \
+           -input=false \
+           -parallelism=20 \
+           -no-color
