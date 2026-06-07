@@ -23,6 +23,18 @@ module "eks" {
     instance_types = ["t3.micro"]
   }
 
+  cluster_addons = {
+    vpc-cni = {
+      resolve_conflicts_on_update = "OVERWRITE"
+      configuration_values = jsonencode({
+        env = {
+          ENABLE_PREFIX_DELEGATION = "true"
+          WARM_PREFIX_TARGET       = "1"
+        }
+      })
+    }
+  }
+
   eks_managed_node_groups = {
     bedrock_nodes = {
       min_size     = 1
@@ -31,6 +43,8 @@ module "eks" {
 
       instance_types = ["t3.micro"]
       capacity_type  = "ON_DEMAND"
+
+      bootstrap_extra_args = "--use-max-pods false --kubelet-extra-args '--max-pods=20'"
     }
   }
 
