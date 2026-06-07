@@ -38,9 +38,14 @@ jobs:
           cd kubernetes/src/app/chart
           helm dependency update
         
-      - name: Terraform Init
+      - name: Create State Bucket and Init
         working-directory: ./terraform
-        run: terraform init
+        run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          BUCKET_NAME="bedrock-tfstate-${ACCOUNT_ID}"
+          echo "Using State Bucket: $BUCKET_NAME"
+          aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null || aws s3api create-bucket --bucket "$BUCKET_NAME" --region us-east-1
+          terraform init -backend-config="bucket=${BUCKET_NAME}"
 
       - name: Terraform Format
         working-directory: ./terraform
