@@ -92,4 +92,4 @@ Use the following URL to navigate to the live Retail Store application.
 **Password:** `[REDACTED_DUE_TO_GITHUB_SECURITY_POLICY]`  
 **URL:** [https://884264985390.signin.aws.amazon.com/console](https://884264985390.signin.aws.amazon.com/console)  
 
-*(Note to Reviewer: Real credentials have been supplied directly in the submission portal due to GitHub security scanning restrictions on public commits).*
+*(Real credentials have been supplied directly in the submission portal due to GitHub security scanning restrictions on public commits).*
