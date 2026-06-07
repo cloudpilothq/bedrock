@@ -1,0 +1,47 @@
+{
+  "alb_url": {
+    "sensitive": false,
+    "type": "string",
+    "value": "Check AWS EC2 Load Balancers console for the classic load balancer URL"
+  },
+  "assets_bucket_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "bedrock-assets-alt-soe-025-4492"
+  },
+  "cluster_endpoint": {
+    "sensitive": false,
+    "type": "string",
+    "value": "https://AEEDB472477EBE0DB5DEC7FE25C9E9F1.gr7.us-east-1.eks.amazonaws.com"
+  },
+  "cluster_name": {
+    "sensitive": false,
+    "type": "string",
+    "value": "project-bedrock-cluster"
+  },
+  "dev_view_access_key": {
+    "sensitive": false,
+    "type": "string",
+    "value": "AKIA43YSM4MXK4JLWLFY"
+  },
+  "dev_view_password": {
+    "sensitive": true,
+    "type": "string",
+    "value": "{3oo+|HB=LtiKs@[bi+o"
+  },
+  "dev_view_secret_key": {
+    "sensitive": true,
+    "type": "string",
+    "value": "fCtcZ3kzKjgJKQlsq0pcg61xNGa9DkhNSUZ2r6VS"
+  },
+  "region": {
+    "sensitive": false,
+    "type": "string",
+    "value": "us-east-1"
+  },
+  "vpc_id": {
+    "sensitive": false,
+    "type": "string",
+    "value": "vpc-0eb1713c8ce1129b7"
+  }
+}
