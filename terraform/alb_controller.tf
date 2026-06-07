@@ -50,5 +50,20 @@ resource "helm_release" "aws_load_balancer_controller" {
     value = var.region
   }
 
+  set {
+    name  = "replicaCount"
+    value = "1"
+  }
+
+  set {
+    name  = "resources.requests.cpu"
+    value = "50m"
+  }
+
+  set {
+    name  = "resources.requests.memory"
+    value = "64Mi"
+  }
+
   depends_on = [module.eks]
 }
