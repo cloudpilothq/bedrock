@@ -20,16 +20,16 @@ module "eks" {
   cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
   eks_managed_node_group_defaults = {
-    instance_types = ["t3.medium"]
+    instance_types = ["t3.micro"]
   }
 
   eks_managed_node_groups = {
     bedrock_nodes = {
       min_size     = 1
       max_size     = 2
-      desired_size = 1
+      desired_size = 2
 
-      instance_types = ["t3.medium"]
+      instance_types = ["t3.micro"]
       capacity_type  = "ON_DEMAND"
     }
   }
