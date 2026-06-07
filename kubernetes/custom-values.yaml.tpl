@@ -25,3 +25,7 @@ cart:
       dynamodb:
         tableName: "${carts_table_name}"
         createTable: false
+
+ui:
+  service:
+    type: LoadBalancer

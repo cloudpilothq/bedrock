@@ -33,5 +33,5 @@ output "dev_view_password" {
 }
 
 output "alb_url" {
-  value = try(kubernetes_ingress_v1.retail_app_ui.status[0].load_balancer[0].ingress[0].hostname, "pending")
+  value = "Check AWS EC2 Load Balancers console for the classic load balancer URL"
 }

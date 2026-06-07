@@ -22,35 +22,3 @@ resource "helm_release" "retail_app" {
   ]
 }
 
-resource "kubernetes_ingress_v1" "retail_app_ui" {
-  metadata {
-    name      = "ui-ingress"
-    namespace = var.app_namespace
-    annotations = {
-      "alb.ingress.kubernetes.io/scheme"      = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type" = "ip"
-    }
-  }
-
-  spec {
-    ingress_class_name = "alb"
-    rule {
-      http {
-        path {
-          path      = "/"
-          path_type = "Prefix"
-          backend {
-            service {
-              name = "ui"
-              port {
-                number = 80
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  depends_on = [helm_release.aws_load_balancer_controller, helm_release.retail_app]
-}
