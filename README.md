@@ -4,41 +4,56 @@
 **AltSchool ID:** ALT/SOE/025/4492  
 **Git Repository Link:** [https://github.com/cloudpilothq/bedrock](https://github.com/cloudpilothq/bedrock)
 
+<br>
+
 ---
+
+<br>
 
 ## 1. The Story Behind the Project
 
+**☁️ The Vision:**  
 Modern cloud computing is no longer just about launching servers; it’s about orchestrating complex, distributed systems that scale automatically, self-heal, and deploy seamlessly. 
 
+**🎯 The Goal:**  
 For my capstone submission, I took on **Project Bedrock**, a complete infrastructure deployment of the **AWS Retail Store Sample App**. 
 
-The goal was ambitious: to take a sprawling microservices application (comprising a UI frontend, Catalog, Orders, Carts, and Checkout services) and build a production-grade AWS environment from scratch to host it. I wanted to demonstrate a deep understanding of:
-- Infrastructure as Code (IaC)
-- Kubernetes orchestration
-- Continuous integration and deployment (CI/CD)
-- Advanced cloud debugging
+The goal was ambitious: to take a sprawling microservices application (comprising a UI frontend, Catalog, Orders, Carts, and Checkout services) and build a production-grade AWS environment from scratch to host it. 
+
+**🧠 The Execution:**  
+I wanted to demonstrate a deep understanding of:
+- **Infrastructure as Code (IaC)**
+- **Kubernetes orchestration**
+- **Continuous integration and deployment (CI/CD)**
+- **Advanced cloud debugging**
 
 This is the story of how that environment was built, the intense challenges encountered, and how they were systematically solved.
 
+<br>
+
 ---
+
+<br>
 
 ## 2. The Creation Phase: Building the Foundation
 
 Instead of clicking through the AWS console, the entire infrastructure was architected programmatically using **Terraform**. This ensured the environment was reproducible, version-controlled, and robust.
 
+<br>
+
 ### The Architecture Setup
 
-- **Networking (VPC):**  
-  I designed a Virtual Private Cloud (VPC) with isolated public and private subnets across multiple Availability Zones. NAT Gateways were configured to allow private resources to securely fetch updates from the internet without being directly exposed.
+**🌐 Networking (VPC):**  
+I designed a Virtual Private Cloud (VPC) with isolated public and private subnets across multiple Availability Zones. NAT Gateways were configured to allow private resources to securely fetch updates from the internet without being directly exposed.
 
-- **Database Layer:**  
-  A true microservices architecture means polyglot persistence. I provisioned **Amazon RDS for MySQL** (for the Catalog), **Amazon RDS for PostgreSQL** (for Orders), and **Amazon DynamoDB** (for the Carts service).
+**🗄️ Database Layer:**  
+A true microservices architecture means polyglot persistence. I provisioned **Amazon RDS for MySQL** (for the Catalog), **Amazon RDS for PostgreSQL** (for Orders), and **Amazon DynamoDB** (for the Carts service).
 
-- **Compute (Amazon EKS):**  
-  The core of the application runs on an Elastic Kubernetes Service (EKS) cluster. EKS provides the orchestration engine to manage the containerized microservices.
+**⚙️ Compute (Amazon EKS):**  
+The core of the application runs on an Elastic Kubernetes Service (EKS) cluster. EKS provides the orchestration engine to manage the containerized microservices.
 
-- **Automation (CI/CD):**  
-  I built a GitHub Actions pipeline (`.github/workflows/terraform-ci-cd.yml`) that automatically initializes, plans, and applies the Terraform code upon every push to the `main` branch. Once the infrastructure is ready, the pipeline authenticates with EKS and deploys the Kubernetes manifests using Helm.
+**🔄 Automation (CI/CD):**  
+I built a GitHub Actions pipeline (`.github/workflows/terraform-ci-cd.yml`) that automatically initializes, plans, and applies the Terraform code upon every push to the `main` branch. Once the infrastructure is ready, the pipeline authenticates with EKS and deploys the Kubernetes manifests using Helm.
 
 <br>
 
@@ -54,7 +69,7 @@ This diagram outlines how traffic routes from the user through the Load Balancer
 
 ### Resource Tagging
 
-Every AWS resource provisioned by Terraform is automatically tagged at creation. I set this up globally via the provider configuration to prevent missing tags on nested resources:
+🏷️ Every AWS resource provisioned by Terraform is automatically tagged at creation. I set this up globally via the provider configuration to prevent missing tags on nested resources:
 
 ```hcl
 provider "aws" {
@@ -69,7 +84,11 @@ provider "aws" {
 }
 ```
 
+<br>
+
 ---
+
+<br>
 
 ## 3. The Debugging Journey: Solving Real-World Cloud Problems
 
@@ -127,19 +146,26 @@ The database layer was misconfigured. In `dynamodb.tf`, the Global Secondary Ind
 
 ---
 
+<br>
+
 ## 4. The Final Results & Access
 
 Through meticulous planning and relentless debugging, **Project Bedrock** reached total stability. Today, the AWS Retail Store Sample App runs flawlessly:
 
-1. **Fully Automated:** A single Git push updates both the AWS infrastructure and the Kubernetes application stack.
-2. **Highly Available:** The EKS cluster spans multiple availability zones, backed by managed RDS and DynamoDB databases.
-3. **Publicly Accessible:** Traffic securely flows from the internet through an AWS Classic Load Balancer directly to the EKS worker nodes in the private subnets.
+**🚀 Fully Automated:**  
+A single Git push updates both the AWS infrastructure and the Kubernetes application stack.
+
+**🛡️ Highly Available:**  
+The EKS cluster spans multiple availability zones, backed by managed RDS and DynamoDB databases.
+
+**🌍 Publicly Accessible:**  
+Traffic securely flows from the internet through an AWS Classic Load Balancer directly to the EKS worker nodes in the private subnets.
 
 <br>
 
 ### Retail Store Access Link & Credentials
 
-Use the following URL to navigate to the live Retail Store application.
+🔗 Use the following URL to navigate to the live Retail Store application.
 
 **Store:** [http://a5a903f0365264903a9c8290e3d75c7d-1800616790.us-east-1.elb.amazonaws.com/](http://a5a903f0365264903a9c8290e3d75c7d-1800616790.us-east-1.elb.amazonaws.com/)  
 
