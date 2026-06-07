@@ -27,65 +27,7 @@ Instead of clicking through the AWS console, the entire infrastructure was archi
 ### High-Level Architecture Diagram
 This diagram outlines how traffic routes from the user through the Load Balancer into the private subnets where EKS, RDS MySQL, and RDS PostgreSQL run, as well as the S3-to-Lambda event stream:
 
-```mermaid
-graph TD
-    %% Define Styles
-    classDef aws fill:#FF9900,stroke:#232F3E,stroke-width:2px,color:white;
-    classDef subnet fill:#D5DBDB,stroke:#7F8C8D,stroke-width:2px;
-    classDef private fill:#EAEDED,stroke:#BDC3C7,stroke-width:2px;
-    classDef db fill:#3498DB,stroke:#2980B9,stroke-width:2px,color:white;
-    
-    User((Public Client))
-
-    subgraph VPC ["VPC (Project Bedrock)"]
-        
-        subgraph PublicSubnets ["Public Subnets"]
-            ALB["AWS Load Balancer"]:::aws
-            NAT["NAT Gateway"]:::aws
-        end
-
-        subgraph PrivateSubnets ["Private Subnets"]
-            EKS["EKS Cluster (retail-app)"]:::aws
-            
-            subgraph Microservices ["Microservices"]
-                UI["UI Pod"]
-                Catalog["Catalog Pod"]
-                Orders["Orders Pod"]
-                Cart["Carts Pod"]
-                Checkout["Checkout Pod"]
-            end
-            
-            MySQL[("RDS MySQL (Catalog)")]:::db
-            Postgres[("RDS PostgreSQL (Orders)")]:::db
-        end
-        
-    end
-    
-    DynamoDB[("DynamoDB (Carts)")]:::db
-    
-    subgraph EventStream ["S3 to Lambda Event Stream"]
-        S3["S3 Bucket"]:::aws
-        Lambda["AWS Lambda Function"]:::aws
-        CW["CloudWatch Logs"]:::aws
-    end
-
-    %% Connections
-    User -->|HTTP Request| ALB
-    ALB -->|Routes Traffic| EKS
-    EKS -.-> UI
-    UI -.-> Catalog
-    UI -.-> Orders
-    UI -.-> Cart
-    UI -.-> Checkout
-    
-    Catalog --> MySQL
-    Orders --> Postgres
-    Cart --> DynamoDB
-    
-    S3 -->|ObjectCreated Event| Lambda
-    Lambda -->|Logs Execution| CW
-
-```
+![High-Level Architecture Diagram](architecture.png)
 
 ### Resource Tagging
 Every AWS resource provisioned by Terraform is automatically tagged at creation. I set this up globally via the provider configuration to prevent missing tags on nested resources:
