@@ -81,7 +81,7 @@ Through meticulous planning and relentless debugging, **Project Bedrock** reache
 
 Use the following URL to navigate to the live Retail Store application.  
 **Store:** [http://a5a903f0365264903a9c8290e3d75c7d-1800616790.us-east-1.elb.amazonaws.com/](http://a5a903f0365264903a9c8290e3d75c7d-1800616790.us-east-1.elb.amazonaws.com/)  
-*(Note: Ensure you access the URL via `http://` and not `https://`)*
+
 
 #### Programmatic Access
 **Access Key:** `[REDACTED_DUE_TO_GITHUB_SECURITY_POLICY]`  
