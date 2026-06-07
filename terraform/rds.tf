@@ -52,7 +52,7 @@ resource "aws_db_instance" "orders_db" {
   identifier             = "project-bedrock-orders-db"
   allocated_storage      = 20
   engine                 = "postgres"
-  engine_version         = "16.1"
+  engine_version         = "16"
   instance_class         = "db.t3.micro"
   db_name                = "orders"
   username               = "ordersadmin"

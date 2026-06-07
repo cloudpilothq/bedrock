@@ -13,6 +13,9 @@ module "eks" {
 
   enable_cluster_creator_admin_permissions = true
 
+  # Disable creation since the log group already exists from a previous run
+  create_cloudwatch_log_group = false
+
   # Enable Control Plane Logging
   cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
