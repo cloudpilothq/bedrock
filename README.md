@@ -46,7 +46,9 @@ Instead of clicking through the AWS console, the entire infrastructure was archi
 
 This diagram outlines how traffic routes from the user through the Load Balancer into the private subnets where EKS, RDS MySQL, and RDS PostgreSQL run, as well as the S3-to-Lambda event stream:
 
-![High-Level Architecture Diagram](architecture.png)
+<p align="center">
+  <img src="architecture.png" alt="High-Level Architecture Diagram">
+</p>
 
 <br>
 
