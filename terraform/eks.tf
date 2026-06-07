@@ -20,7 +20,7 @@ module "eks" {
   cluster_enabled_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
 
   eks_managed_node_group_defaults = {
-    instance_types = ["t3.micro"]
+    instance_types = ["t3.small"]
   }
 
   cluster_addons = {
@@ -39,9 +39,9 @@ module "eks" {
     bedrock_nodes = {
       min_size     = 1
       max_size     = 3
-      desired_size = 3
+      desired_size = 2
 
-      instance_types = ["t3.micro"]
+      instance_types = ["t3.small"]
       capacity_type  = "ON_DEMAND"
 
       bootstrap_extra_args = "--use-max-pods false --kubelet-extra-args '--max-pods=20'"
