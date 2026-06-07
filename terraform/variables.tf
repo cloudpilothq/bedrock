@@ -19,7 +19,7 @@ variable "vpc_name" {
 variable "student_id" {
   description = "Student ID for S3 bucket uniqueness"
   type        = string
-  default     = "cloudpilothq"
+  default     = "alt-soe-025-4492"
 }
 
 variable "app_namespace" {
