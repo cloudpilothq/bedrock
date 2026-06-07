@@ -27,41 +27,40 @@ jobs:
         working-directory: ./terraform
         run: terraform init
 
-      - name: Clean Up State Before Destroy
-        working-directory: ./terraform
-        run: |
-          # Remove problematic resources from state before destroy
-          # This prevents destroy failures if these resources are already gone or stuck
-          terraform state rm aws_iam_role.eks_addon_role 2>/dev/null || true
-          terraform state rm 'module.eks_blueprints_addons.aws_eks_addon.this["amazon-cloudwatch-observability"]' 2>/dev/null || true
-          terraform state rm helm_release.retail_store 2>/dev/null || true
-          
-          # Remove dependent resources that prevent deletion
-          terraform state rm aws_iam_user_policy_attachment.bedrock_dev_view 2>/dev/null || true
-          terraform state rm aws_iam_role_policy_attachment.eks_addon 2>/dev/null || true
-          terraform state rm aws_network_interface 2>/dev/null || true
-          terraform state rm aws_instance 2>/dev/null || true
-        continue-on-error: true
-
       - name: Terraform Destroy
         working-directory: ./terraform
         run: |
-          # Manually detach IAM policies in case they are out of sync with Terraform state
-          aws iam detach-user-policy --user-name bedrock-dev-view --policy-arn arn:aws:iam::aws:policy/ReadOnlyAccess 2>/dev/null || true
-          aws iam delete-user-policy --user-name bedrock-dev-view --policy-name bedrock-assets-put 2>/dev/null || true
-          
-          # Retry destroy up to 3 times to handle EKS/RDS timeouts and cascading ENI dependency errors
-          for i in 1 2 3; do
-            terraform destroy -auto-approve && exit 0
-            echo "Destroy failed (attempt $i). Waiting 60 seconds before retrying..."
-            sleep 60
+          # Step 1: Detach all IAM policies before attempting user deletion
+          aws iam list-attached-user-policies --user-name bedrock-dev-view \
+          --query 'AttachedPolicies[].PolicyArn' --output text 2>/dev/null | \
+          tr '\t' '\n' | while read arn; do
+          [ -n "$arn" ] && aws iam detach-user-policy --user-name bedrock-dev-view --policy-arn "$arn" 2>/dev/null || true
           done
+    
+          # Step 2: Delete inline policies
+          aws iam list-user-policies --user-name bedrock-dev-view \
+          --query 'PolicyNames' --output text 2>/dev/null | \
+          tr '\t' '\n' | while read policy; do
+          [ -n "$policy" ] && aws iam delete-user-policy --user-name bedrock-dev-view --policy-name "$policy" 2>/dev/null || true
+          done
+    
+          # Step 3: Remove problematic resources from state before destroy
+          terraform state rm 'aws_iam_user.bedrock_dev_view' 2>/dev/null || true
+          terraform state rm 'aws_iam_user_policy_attachment.bedrock_dev_view' 2>/dev/null || true
+          terraform state rm 'module.eks_blueprints_addons.aws_eks_addon.this["amazon-cloudwatch-observability"]' 2>/dev/null || true
+          terraform state rm 'helm_release.retail_store' 2>/dev/null || true
+          terraform state rm 'aws_iam_role_policy_attachment.eks_addon' 2>/dev/null || true
+    
+          # Step 4: Retry destroy with better error handling
+          for i in 1 2 3; do
+          terraform destroy -auto-approve && exit 0
+          echo "Destroy failed (attempt $i/3). Waiting 60 seconds before retrying..."
+          sleep 60
+          done
+    
+          # Step 5: Force state cleanup for stubborn resources
+          terraform state rm 'module.vpc' 2>/dev/null || true
+          terraform state rm 'module.rds' 2>/dev/null || true
+    
+          echo "Manual cleanup may be required for remaining AWS resources"
           exit 1
-
-      - name: Terraform Destroy with Targeted Removal
-        working-directory: ./terraform
-        run: |
-          # First, destroy non-dependent resources
-          terraform destroy -auto-approve -target='aws_iam_user_policy_attachment.bedrock_dev_view' 2>/dev/null || true
-          # Then proceed with full destroy
-          terraform destroy -auto-approve
