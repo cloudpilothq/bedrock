@@ -1,6 +1,6 @@
 # Project Bedrock: From Code to Cloud — My Capstone Journey
 
-**Author:** UMUKORO OMERUSURE  
+**Student Name:** UMUKORO OMERUSURE  
 **AltSchool ID:** ALT/SOE/025/4492  
 **Git Repository Link:** [https://github.com/cloudpilothq/bedrock](https://github.com/cloudpilothq/bedrock)
 
