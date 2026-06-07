@@ -14,7 +14,7 @@ resource "aws_dynamodb_table" "carts" {
   }
 
   global_secondary_index {
-    name            = "customerId-index"
+    name            = "idx_global_customerId"
     hash_key        = "customerId"
     projection_type = "ALL"
   }
