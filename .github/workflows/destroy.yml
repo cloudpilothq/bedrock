@@ -43,6 +43,21 @@ jobs:
           terraform state rm aws_instance 2>/dev/null || true
         continue-on-error: true
 
+      - name: Terraform Destroy
+        working-directory: ./terraform
+        run: |
+          # Manually detach IAM policies in case they are out of sync with Terraform state
+          aws iam detach-user-policy --user-name bedrock-dev-view --policy-arn arn:aws:iam::aws:policy/ReadOnlyAccess 2>/dev/null || true
+          aws iam delete-user-policy --user-name bedrock-dev-view --policy-name bedrock-assets-put 2>/dev/null || true
+          
+          # Retry destroy up to 3 times to handle EKS/RDS timeouts and cascading ENI dependency errors
+          for i in 1 2 3; do
+            terraform destroy -auto-approve && exit 0
+            echo "Destroy failed (attempt $i). Waiting 60 seconds before retrying..."
+            sleep 60
+          done
+          exit 1
+
       - name: Terraform Destroy with Targeted Removal
         working-directory: ./terraform
         run: |
