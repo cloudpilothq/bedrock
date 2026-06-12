@@ -1,5 +1,6 @@
 resource "aws_iam_user" "dev_view" {
-  name = "bedrock-dev-view"
+  name          = "bedrock-dev-view"
+  force_destroy = true
 }
 
 resource "aws_iam_access_key" "dev_view" {
