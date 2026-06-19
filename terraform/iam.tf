@@ -46,6 +46,7 @@ resource "aws_eks_access_entry" "dev_view" {
 
 
 resource "kubernetes_cluster_role_binding" "dev_view" {
+  depends_on = [module.eks]
   metadata {
     name = "bedrock-dev-view-binding"
   }
