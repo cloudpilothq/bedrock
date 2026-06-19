@@ -167,7 +167,7 @@ Traffic securely flows from the internet through an AWS Classic Load Balancer di
 
 🔗 Use the following URL to navigate to the live Retail Store application.
 
-**Store:** [http://a5a903f0365264903a9c8290e3d75c7d-1800616790.us-east-1.elb.amazonaws.com/](http://a5a903f0365264903a9c8290e3d75c7d-1800616790.us-east-1.elb.amazonaws.com/)  
+**Store:** [http://a1f01216b33b74b1db78932e2a95a8d4-1013868158.us-east-1.elb.amazonaws.com/](http://a1f01216b33b74b1db78932e2a95a8d4-1013868158.us-east-1.elb.amazonaws.com/)  
 
 
 #### Programmatic Access
@@ -175,8 +175,8 @@ Traffic securely flows from the internet through an AWS Classic Load Balancer di
 **Secret Key:** `[REDACTED_DUE_TO_GITHUB_SECURITY_POLICY]`  
 
 #### Console Credentials
-**Username:** `myown`  
+**Username:** `admin`  
 **Password:** `[REDACTED_DUE_TO_GITHUB_SECURITY_POLICY]`  
-**URL:** [https://884264985390.signin.aws.amazon.com/console](https://884264985390.signin.aws.amazon.com/console)  
+**URL:** [https://538783576455.signin.aws.amazon.com/console](https://538783576455.signin.aws.amazon.com/console)  
 
 *(Real credentials have been supplied directly in the submission portal due to GitHub security scanning restrictions on public commits).*
