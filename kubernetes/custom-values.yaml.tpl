@@ -14,8 +14,10 @@ catalog:
 
 orders:
   app:
+    messaging:
+      provider: rabbitmq
     persistence:
-      provider: postgresql
+      provider: postgres
       endpoint: "${orders_db_endpoint}"
       secret:
         create: true
@@ -25,6 +27,8 @@ orders:
     requests:
       cpu: 10m
       memory: 64Mi
+  rabbitmq:
+    create: true
 
 cart:
   app:
@@ -39,10 +43,15 @@ cart:
       memory: 64Mi
 
 checkout:
+  app:
+    persistence:
+      provider: redis
   resources:
     requests:
       cpu: 10m
       memory: 64Mi
+  redis:
+    create: true
 
 ui:
   service:
