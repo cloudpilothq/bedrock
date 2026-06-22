@@ -15,13 +15,3 @@ resource "aws_s3_bucket_public_access_block" "assets_block" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_notification" "bucket_notification" {
-  bucket = aws_s3_bucket.assets.id
-
-  lambda_function {
-    lambda_function_arn = aws_lambda_function.asset_processor.arn
-    events              = ["s3:ObjectCreated:*"]
-  }
-
-  depends_on = [aws_lambda_permission.allow_s3]
-}
